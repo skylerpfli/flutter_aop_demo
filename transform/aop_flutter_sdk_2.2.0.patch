@@ -1,0 +1,193 @@
+From 778637af8f4fa78717440f2a8946b87a0a05dd08 Mon Sep 17 00:00:00 2001
+From: skyerpfli <skylerpfli@tencent.com>
+Date: Sun, 28 Nov 2021 16:07:10 +0800
+Subject: [PATCH] =?UTF-8?q?=E6=8F=90=E4=BA=A4transform?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ packages/flutter_tools/bin/flutter_tools.dart |   1 +
+ packages/flutter_tools/lib/src/compile.dart   |  12 +-
+ packages/flutter_tools/lib/src/hook.dart      | 121 ++++++++++++++++++
+ 3 files changed, 131 insertions(+), 3 deletions(-)
+ create mode 100644 packages/flutter_tools/lib/src/hook.dart
+
+diff --git a/packages/flutter_tools/bin/flutter_tools.dart b/packages/flutter_tools/bin/flutter_tools.dart
+index 1cad0ded07..0643b7353c 100644
+--- a/packages/flutter_tools/bin/flutter_tools.dart
++++ b/packages/flutter_tools/bin/flutter_tools.dart
+@@ -7,5 +7,6 @@
+ import 'package:flutter_tools/executable.dart' as executable;
+ 
+ void main(List<String> args) {
++  print('FlutterAop execute command: ${args.join(' ')}');
+   executable.main(args);
+ }
+diff --git a/packages/flutter_tools/lib/src/compile.dart b/packages/flutter_tools/lib/src/compile.dart
+index b27209d95f..5e24da1a5b 100644
+--- a/packages/flutter_tools/lib/src/compile.dart
++++ b/packages/flutter_tools/lib/src/compile.dart
+@@ -20,6 +20,7 @@ import 'base/logger.dart';
+ import 'base/platform.dart';
+ import 'build_info.dart';
+ import 'convert.dart';
++import 'hook.dart';
+ 
+ /// The target model describes the set of core libraries that are available within
+ /// the SDK.
+@@ -235,9 +236,13 @@ class KernelCompiler {
+     @required List<String> dartDefines,
+     @required PackageConfig packageConfig,
+   }) async {
+-    final String frontendServer = _artifacts.getArtifactPath(
+-      Artifact.frontendServerSnapshotForEngineDartSdk
+-    );
++    /// 工程插桩，优先
++    String frontendServer = await TransformHook.fetchTransformSnapshot();
++    print('FlutterAop isEnable: ${frontendServer != null}');
++
++    /// 默认
++    frontendServer ??= _artifacts.getArtifactPath(Artifact.frontendServerSnapshotForEngineDartSdk);
++
+     // This is a URI, not a file path, so the forward slash is correct even on Windows.
+     if (!sdkRoot.endsWith('/')) {
+       sdkRoot = '$sdkRoot/';
+@@ -305,6 +310,7 @@ class KernelCompiler {
+       mainUri ?? mainPath,
+     ];
+ 
++    print('FlutterAop compile command: ${command.join(' ')}');
+     _logger.printTrace(command.join(' '));
+     final Process server = await _processManager.start(command);
+ 
+diff --git a/packages/flutter_tools/lib/src/hook.dart b/packages/flutter_tools/lib/src/hook.dart
+new file mode 100644
+index 0000000000..ec0de8f826
+--- /dev/null
++++ b/packages/flutter_tools/lib/src/hook.dart
+@@ -0,0 +1,121 @@
++// Copyright 2018 The Chromium Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++import 'dart:io';
++
++import 'package:package_config/package_config.dart';
++
++import 'artifacts.dart';
++import 'base/common.dart';
++import 'base/file_system.dart';
++import 'build_system/build_system.dart';
++import 'build_system/targets/common.dart';
++import 'cache.dart';
++import 'compile.dart';
++import 'dart/package_map.dart';
++import 'globals.dart' as globals;
++
++/// transform
++class TransformHook {
++  //snapshot名
++  static const String frontendServerDartSnapshot = 'frontend_server.dart.snapshot';
++
++  //传入.package路径，获取某一依赖的路径
++  static Future<Directory?> _getPackagePathFromConfig(String packageConfigPath, String packageName) async {
++    final PackageConfig packageConfig = await loadPackageConfigWithLogging(
++      globals.fs.file(packageConfigPath),
++      logger: globals.logger,
++    );
++    if (packageConfig.packages.isNotEmpty) {
++      try {
++        final Package targetPackage = packageConfig.packages.toList().firstWhere((Package element) => element.name == packageName);
++        return globals.fs.directory(targetPackage.root.toFilePath());
++        // ignore: avoid_catches_without_on_clauses
++      } catch (e) {
++        return null;
++      }
++    }
++    return null;
++  }
++
++  //获取dart sdk依赖
++  static Future<String> getDartSdkDependency(String workingDirectory) async {
++    final ProcessResult processResult =
++        await globals.processManager.run(<String>[globals.fs.path.join(globals.artifacts.getArtifactPath(Artifact.engineDartSdkPath), 'bin', 'pub'), 'get', '--verbosity=warning'], workingDirectory: workingDirectory, environment: <String, String>{'FLUTTER_ROOT': Cache.flutterRoot!});
++    if (processResult.exitCode != 0) {
++      throwToolExit('ConchFlutter unexpected error: ${processResult.stderr.toString()}');
++    }
++    final Directory? kernelDir = await _getPackagePathFromConfig(globals.fs.path.join(workingDirectory, '.packages'), 'kernel');
++    return kernelDir?.parent.parent.uri.toString() ?? '';
++  }
++
++  // 依赖路径
++  Future<String> getDependency(String workingDirectory, String dependency) async {
++    //pub get
++    final ProcessResult processResult =
++        await globals.processManager.run(<String>[globals.fs.path.join(globals.artifacts.getArtifactPath(Artifact.engineDartSdkPath), 'bin', 'pub'), 'get', '--verbosity=warning'], workingDirectory: workingDirectory, environment: <String, String>{'FLUTTER_ROOT': Cache.flutterRoot!});
++    if (processResult.exitCode != 0) {
++      throwToolExit('ConchFlutter unexpected error: ${processResult.stderr.toString()}');
++    }
++    final Directory? dependencyDir = await _getPackagePathFromConfig(globals.fs.path.join(workingDirectory, '.packages'), dependency);
++    return dependencyDir?.uri.toString() ?? '';
++  }
++
++  //获取frontedServer路径，位于主工程/transform/lib/flutter_frontend_server目录下
++  static Future<Directory> getFlutterFrontendServerDirectory(String path) async {
++    return globals.fs.directory(globals.fs.path.join(path, 'transform', 'lib', 'flutter_frontend_server'));
++  }
++
++  //获取FlutterAop的frontend_server snapshot路径
++  static Future<String?> fetchTransformSnapshot() async {
++    final Directory currentDirectory = globals.fs.currentDirectory;
++    if (!currentDirectory.existsSync()) {
++      return null;
++    }
++    final String packagesPath = currentDirectory.absolute.path;
++
++    final Directory flutterFrontendServerDirectory = await getFlutterFrontendServerDirectory(packagesPath);
++
++    if (!(flutterFrontendServerDirectory.existsSync() &&
++        globals.fs.file(globals.fs.path.join(currentDirectory.path, 'pubspec.yaml')).existsSync() &&
++        globals.fs.file(globals.fs.path.join(currentDirectory.path, '.packages')).existsSync() &&
++        globals.fs.file(globals.fs.path.join(currentDirectory.path, 'lib', 'main.dart')).existsSync())) {
++      return null;
++    }
++
++    final String hookFlutterFrontendServerSnapshot = globals.fs.path.join(flutterFrontendServerDirectory.absolute.path, frontendServerDartSnapshot);
++
++    //每次都重新生成FrontendServerSnapshot
++    if (globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
++      globals.fs.file(hookFlutterFrontendServerSnapshot).deleteSync();
++    }
++    final String dartSdkDir = await getDartSdkDependency(globals.fs.path.join(packagesPath, 'transform'));
++    final String frontendServerPackageConfigJsonFile = '${flutterFrontendServerDirectory.absolute.path}/package_config.json';
++    final String rebasedFrontendServerPackageConfigJsonFile = '${flutterFrontendServerDirectory.absolute.path}/rebased_package_config.json';
++    String frontendServerPackageConfigJson = globals.fs.file(frontendServerPackageConfigJsonFile).readAsStringSync();
++    frontendServerPackageConfigJson = frontendServerPackageConfigJson.replaceAll('../../../third_party/dart/', dartSdkDir);
++    globals.fs.file(rebasedFrontendServerPackageConfigJsonFile).writeAsStringSync(frontendServerPackageConfigJson);
++
++    final List<String> commands = <String>[
++      globals.artifacts.getArtifactPath(Artifact.engineDartBinary),
++      '--deterministic',
++      '--packages=$rebasedFrontendServerPackageConfigJsonFile',
++      '--snapshot=$hookFlutterFrontendServerSnapshot',
++      '--snapshot-kind=kernel',
++      '${flutterFrontendServerDirectory.absolute.path}/starter.dart'
++    ];
++    final ProcessResult processResult = await globals.processManager.run(commands);
++    globals.fs.file(rebasedFrontendServerPackageConfigJsonFile).deleteSync();
++    if (processResult.exitCode != 0 || !globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
++      print('ConchFlutter unexpected error: ${processResult.stderr.toString()}');
++      throwToolExit('ConchFlutter unexpected error: ${processResult.stderr.toString()}');
++    }
++
++    if (!globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
++      return null;
++    }
++
++    return hookFlutterFrontendServerSnapshot;
++  }
++}
+-- 
+2.24.3 (Apple Git-128)
+

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:annotation/hook_type.dart';
-import 'package:annotation/inject/type_helper.dart';
 
 void main() {
   runApp(MyApp());

@@ -13,7 +13,7 @@ Demo中有一个简单的插桩例子，@HookType()标记的方法会自行打�
 ① 对FlutterSdk打补丁
 ```
 cd xxx/flutter
-git apply --3way aop_flutter_sdk_2.2.0.patch
+git apply aop_flutter_sdk_2.2.0.patch
 rm bin/cache/flutter_tools.stamp 
 ```
 ② 拷贝Demo中transform文件夹到项目根目录下。

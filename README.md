@@ -31,7 +31,7 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 
 ②备份 [flutter_frontend_server/package_config.json](https://github.com/skylerpfli/flutter_aop_demo/blob/main/transform/lib/flutter_frontend_server/package_config.json)，并把其中的`../../../third_party/dart`改为`file:///Users/xxx/dartSdkHook` (本地dart依赖仓库路径)
 
-③把该备份的package_config.json拷贝进transfrom/.dart_tool文件夹下并覆盖。(无该路径则在tranfrom文件夹下执行`flutter pub get`)
+③把修改后的package_config.json拷贝进transfrom/.dart_tool文件夹下并覆盖。(无该路径则在tranfrom文件夹下执行`flutter pub get`)
 
 此时tranfrom文件夹import正常，无报红。（项目pub get后需要重复此步骤）
 

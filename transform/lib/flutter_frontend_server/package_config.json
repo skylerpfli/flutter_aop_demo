@@ -5,7 +5,7 @@
       "name": "flutter_frontend_server",
       "rootUri": "../",
       "packageUri": "lib",
-      "languageVersion": "2.2"
+      "languageVersion": "2.6"
     },
     {
       "name": "_fe_analyzer_shared",

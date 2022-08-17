@@ -1,7 +1,7 @@
-From 6b64ea3eb1f9f54106825f714dce59436b017463 Mon Sep 17 00:00:00 2001
+From 6b598c58dfdd2f1cc7c7f8242a94998f530d70b3 Mon Sep 17 00:00:00 2001
 From: skylerpfli <skylerpfli@tencent.com>
-Date: Wed, 17 Aug 2022 10:32:20 +0800
-Subject: [PATCH] =?UTF-8?q?=E6=96=B0=E6=8F=90=E4=BA=A4?=
+Date: Wed, 17 Aug 2022 14:46:28 +0800
+Subject: [PATCH] =?UTF-8?q?2.2.0=E6=8F=90=E4=BA=A4?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -9,8 +9,8 @@ Content-Transfer-Encoding: 8bit
 ---
  packages/flutter_tools/bin/flutter_tools.dart |   1 +
  packages/flutter_tools/lib/src/compile.dart   |  12 +-
- packages/flutter_tools/lib/src/hook.dart      | 123 ++++++++++++++++++
- 3 files changed, 133 insertions(+), 3 deletions(-)
+ packages/flutter_tools/lib/src/hook.dart      | 125 ++++++++++++++++++
+ 3 files changed, 135 insertions(+), 3 deletions(-)
  create mode 100644 packages/flutter_tools/lib/src/hook.dart
 
 diff --git a/packages/flutter_tools/bin/flutter_tools.dart b/packages/flutter_tools/bin/flutter_tools.dart
@@ -63,10 +63,10 @@ index b27209d95f..5e24da1a5b 100644
  
 diff --git a/packages/flutter_tools/lib/src/hook.dart b/packages/flutter_tools/lib/src/hook.dart
 new file mode 100644
-index 0000000000..04bfcd7bd2
+index 0000000000..7ae2dc6529
 --- /dev/null
 +++ b/packages/flutter_tools/lib/src/hook.dart
-@@ -0,0 +1,123 @@
+@@ -0,0 +1,125 @@
 +// Copyright 2018 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -177,6 +177,8 @@ index 0000000000..04bfcd7bd2
 +      '${flutterFrontendServerDirectory.absolute.path}/starter.dart'
 +    ];
 +    final ProcessResult processResult = await globals.processManager.run(commands);
++    final String dartToolPackageConfigFile = globals.fs.path.join(packagesPath, 'transform', '.dart_tool', 'package_config.json');
++    await globals.processManager.run(<String>['cp', '-rf', rebasedFrontendServerPackageConfigJsonFile, dartToolPackageConfigFile]);
 +    globals.fs.file(rebasedFrontendServerPackageConfigJsonFile).deleteSync();
 +    if (processResult.exitCode != 0 || !globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
 +      print('ConchFlutter fetchTransformSnapshot unexpected error: ${processResult.stderr.toString()}');

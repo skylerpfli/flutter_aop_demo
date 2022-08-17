@@ -9,12 +9,12 @@ dependency_overrides:
   kernel:
     git:
       url: https://github.com/skylerpfli/DartSdkHook.git
-      ref: stable/2.2.0
+      ref: stable/2.5.3
       path: pkg/kernel
   meta:
     git:
       url: https://github.com/skylerpfli/DartSdkHook.git
-      ref: stable/2.2.0
+      ref: stable/2.5.3
       path: pkg/meta
 
 # For information on the generic Dart part of this file, see the

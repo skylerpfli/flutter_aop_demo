@@ -1,7 +1,7 @@
-From 6b598c58dfdd2f1cc7c7f8242a94998f530d70b3 Mon Sep 17 00:00:00 2001
+From 83e6b66d9651ebff3d7dece2b7e81242e9fc68f0 Mon Sep 17 00:00:00 2001
 From: skylerpfli <skylerpfli@tencent.com>
-Date: Wed, 17 Aug 2022 14:46:28 +0800
-Subject: [PATCH] =?UTF-8?q?2.2.0=E6=8F=90=E4=BA=A4?=
+Date: Wed, 17 Aug 2022 14:40:07 +0800
+Subject: [PATCH] =?UTF-8?q?2.5.3hook=E6=8F=90=E4=BA=A4?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -9,8 +9,8 @@ Content-Transfer-Encoding: 8bit
 ---
  packages/flutter_tools/bin/flutter_tools.dart |   1 +
  packages/flutter_tools/lib/src/compile.dart   |  12 +-
- packages/flutter_tools/lib/src/hook.dart      | 125 ++++++++++++++++++
- 3 files changed, 135 insertions(+), 3 deletions(-)
+ packages/flutter_tools/lib/src/hook.dart      | 113 ++++++++++++++++++
+ 3 files changed, 123 insertions(+), 3 deletions(-)
  create mode 100644 packages/flutter_tools/lib/src/hook.dart
 
 diff --git a/packages/flutter_tools/bin/flutter_tools.dart b/packages/flutter_tools/bin/flutter_tools.dart
@@ -25,10 +25,10 @@ index 1cad0ded07..0643b7353c 100644
    executable.main(args);
  }
 diff --git a/packages/flutter_tools/lib/src/compile.dart b/packages/flutter_tools/lib/src/compile.dart
-index b27209d95f..5e24da1a5b 100644
+index b41bc4ff2b..c85e114246 100644
 --- a/packages/flutter_tools/lib/src/compile.dart
 +++ b/packages/flutter_tools/lib/src/compile.dart
-@@ -20,6 +20,7 @@ import 'base/logger.dart';
+@@ -18,6 +18,7 @@ import 'base/logger.dart';
  import 'base/platform.dart';
  import 'build_info.dart';
  import 'convert.dart';
@@ -37,14 +37,14 @@ index b27209d95f..5e24da1a5b 100644
  /// The target model describes the set of core libraries that are available within
  /// the SDK.
 @@ -235,9 +236,13 @@ class KernelCompiler {
-     @required List<String> dartDefines,
-     @required PackageConfig packageConfig,
+     required List<String> dartDefines,
+     required PackageConfig packageConfig,
    }) async {
 -    final String frontendServer = _artifacts.getArtifactPath(
 -      Artifact.frontendServerSnapshotForEngineDartSdk
 -    );
-+    /// 工程插桩，优先
-+    String frontendServer = await TransformHook.fetchTransformSnapshot();
++    /// 插桩工程，有限
++    String? frontendServer = await TransformHook.fetchTransformSnapshot();
 +    print('FlutterAop isEnable: ${frontendServer != null}');
 +
 +    /// 默认
@@ -53,8 +53,8 @@ index b27209d95f..5e24da1a5b 100644
      // This is a URI, not a file path, so the forward slash is correct even on Windows.
      if (!sdkRoot.endsWith('/')) {
        sdkRoot = '$sdkRoot/';
-@@ -305,6 +310,7 @@ class KernelCompiler {
-       mainUri ?? mainPath,
+@@ -315,6 +320,7 @@ class KernelCompiler {
+       mainUri,
      ];
  
 +    print('FlutterAop compile command: ${command.join(' ')}');
@@ -63,10 +63,10 @@ index b27209d95f..5e24da1a5b 100644
  
 diff --git a/packages/flutter_tools/lib/src/hook.dart b/packages/flutter_tools/lib/src/hook.dart
 new file mode 100644
-index 0000000000..7ae2dc6529
+index 0000000000..b32a2387da
 --- /dev/null
 +++ b/packages/flutter_tools/lib/src/hook.dart
-@@ -0,0 +1,125 @@
+@@ -0,0 +1,113 @@
 +// Copyright 2018 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -85,6 +85,7 @@ index 0000000000..7ae2dc6529
 +import 'dart/package_map.dart';
 +import 'globals.dart' as globals;
 +
++// ignore: avoid_classes_with_only_static_members
 +/// transform
 +class TransformHook {
 +  //snapshot名
@@ -110,27 +111,14 @@ index 0000000000..7ae2dc6529
 +
 +  //获取dart sdk依赖
 +  static Future<String> getDartSdkDependency(String workingDirectory) async {
-+    final ProcessResult processResult =
-+        await globals.processManager.run(<String>[globals.fs.path.join(globals.artifacts.getArtifactPath(Artifact.engineDartSdkPath), 'bin', 'pub'), 'get', '--verbosity=warning'], workingDirectory: workingDirectory, environment: <String, String>{'FLUTTER_ROOT': Cache.flutterRoot!});
++    final ProcessResult processResult = await globals.processManager.run(<String>[globals.fs.path.join(globals.artifacts!.getHostArtifact(HostArtifact.engineDartSdkPath).path, 'bin', 'pub'), 'get', '--verbosity=warning'],
++        workingDirectory: workingDirectory, environment: <String, String>{'FLUTTER_ROOT': Cache.flutterRoot!});
 +    if (processResult.exitCode != 0) {
 +      print('ConchFlutter getDartSdkDependency unexpected error: ${processResult.stderr.toString()}');
 +      throwToolExit('ConchFlutter getDartSdkDependency unexpected error: ${processResult.stderr.toString()}');
 +    }
 +    final Directory? kernelDir = await _getPackagePathFromConfig(globals.fs.path.join(workingDirectory, '.packages'), 'kernel');
 +    return kernelDir?.parent.parent.uri.toString() ?? '';
-+  }
-+
-+  // 依赖路径
-+  Future<String> getDependency(String workingDirectory, String dependency) async {
-+    //pub get
-+    final ProcessResult processResult =
-+        await globals.processManager.run(<String>[globals.fs.path.join(globals.artifacts.getArtifactPath(Artifact.engineDartSdkPath), 'bin', 'pub'), 'get', '--verbosity=warning'], workingDirectory: workingDirectory, environment: <String, String>{'FLUTTER_ROOT': Cache.flutterRoot!});
-+    if (processResult.exitCode != 0) {
-+      print('ConchFlutter getDependency unexpected error: ${processResult.stderr.toString()}');
-+      throwToolExit('ConchFlutter getDependency unexpected error: ${processResult.stderr.toString()}');
-+    }
-+    final Directory? dependencyDir = await _getPackagePathFromConfig(globals.fs.path.join(workingDirectory, '.packages'), dependency);
-+    return dependencyDir?.uri.toString() ?? '';
 +  }
 +
 +  //获取frontedServer路径，位于主工程/transform/lib/flutter_frontend_server目录下
@@ -169,7 +157,7 @@ index 0000000000..7ae2dc6529
 +    globals.fs.file(rebasedFrontendServerPackageConfigJsonFile).writeAsStringSync(frontendServerPackageConfigJson);
 +
 +    final List<String> commands = <String>[
-+      globals.artifacts.getArtifactPath(Artifact.engineDartBinary),
++      globals.artifacts!.getHostArtifact(HostArtifact.engineDartBinary).path,
 +      '--deterministic',
 +      '--packages=$rebasedFrontendServerPackageConfigJsonFile',
 +      '--snapshot=$hookFlutterFrontendServerSnapshot',

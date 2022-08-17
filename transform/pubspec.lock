@@ -5,8 +5,8 @@ packages:
     dependency: "direct overridden"
     description:
       path: "pkg/kernel"
-      ref: "stable/2.10.5"
-      resolved-ref: ec60e08308bbcc50bc99b10f57a1956b2c617f57
+      ref: "stable/3.0.5"
+      resolved-ref: "8d4a8fef20070681f1def93ef6d7c97497ee7df1"
       url: "https://github.com/skylerpfli/DartSdkHook.git"
     source: git
     version: "0.0.0"
@@ -14,8 +14,8 @@ packages:
     dependency: "direct overridden"
     description:
       path: "pkg/meta"
-      ref: "stable/2.10.5"
-      resolved-ref: ec60e08308bbcc50bc99b10f57a1956b2c617f57
+      ref: "stable/3.0.5"
+      resolved-ref: "8d4a8fef20070681f1def93ef6d7c97497ee7df1"
       url: "https://github.com/skylerpfli/DartSdkHook.git"
     source: git
     version: "1.7.1-dev"

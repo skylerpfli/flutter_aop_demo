@@ -73,4 +73,5 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 目前未支持热重启，只支持正常打包的aop，足够应对业务使用。
 
 #### 2. 运行时编译日志未打印
-大概率是缓存原因，可先运行flutter clean，并清空android/app/build目录
+请确保使用改造后的Sdk，并删除bin/cache/flutter_tools.stamp文件
+其余大概率是缓存原因，可先运行flutter clean，并清空android/app/build目录

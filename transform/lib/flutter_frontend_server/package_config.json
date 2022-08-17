@@ -29,7 +29,7 @@
       "name": "async",
       "rootUri": "../../../third_party/dart/third_party/pkg/async",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.14"
     },
     {
       "name": "async_helper",
@@ -87,9 +87,9 @@
     },
     {
       "name": "dart2js_info",
-      "rootUri": "../../../third_party/dart/third_party/pkg/dart2js_info",
+      "rootUri": "../../../third_party/dart/pkg/dart2js_info",
       "packageUri": "lib/",
-      "languageVersion": "2.3"
+      "languageVersion": "2.11"
     },
     {
       "name": "dev_compiler",
@@ -113,7 +113,7 @@
       "name": "front_end",
       "rootUri": "../../../third_party/dart/pkg/front_end",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.13"
     },
     {
       "name": "frontend_server",
@@ -215,7 +215,7 @@
       "name": "source_maps",
       "rootUri": "../../../third_party/dart/third_party/pkg/source_maps",
       "packageUri": "lib/",
-      "languageVersion": "2.10"
+      "languageVersion": "2.12"
     },
     {
       "name": "source_span",
@@ -272,7 +272,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2022-08-17T03:04:47.426944Z",
+  "generated": "2022-08-17T07:51:12.986295Z",
   "generator": "pub",
-  "generatorVersion": "2.14.0-293.0.dev"
+  "generatorVersion": "2.15.0-82.0.dev"
 }

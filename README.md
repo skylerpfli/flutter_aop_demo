@@ -52,7 +52,7 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 
 ③把修改后的package_config.json拷贝进transfrom/.dart_tool文件夹下并覆盖。(无该路径则在tranfrom文件夹下执行`flutter pub get`)
 
-此时tranfrom文件夹import正常，无报红。（项目pub get后需要重复此步骤）
+此时tranfrom文件夹import正常，无报红。
 
 --
 #### 2. 创建调试

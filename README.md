@@ -9,6 +9,10 @@ Demo中有一个简单的插桩例子，@HookType()标记的方法会自行打�
 
 ![image](https://user-images.githubusercontent.com/40731589/144044938-57425bf3-991d-4a22-9b29-467f7f09c89f.png)
 
+### 参考文章：
+框架：[Flutter Ast语法树操纵与Aop集成](https://juejin.cn/post/7036352267389239303)
+
+
 ### 一、如何复用Aop能力
 ① 请将本工程切换到Flutter对应版本，分支为aop/x.x.x (flutter版本号)
 
@@ -62,5 +66,4 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 ![image](https://user-images.githubusercontent.com/40731589/144051356-c92624ad-f236-4dce-a226-695c671d7f4d.png)
 
 断点后，点击debug后即可调试
-
 

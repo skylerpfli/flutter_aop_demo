@@ -75,4 +75,4 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 #### 2. Aop编译日志未打印
 请确保使用改造后的Sdk，并删除bin/cache/flutter_tools.stamp文件
 
-其余大概率是缓存原因，可先运行flutter clean，并清空android/app/build目录
+其余大概率是工程缓存导致，可先运行flutter clean，并清空android/app/build目录

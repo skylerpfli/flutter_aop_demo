@@ -1,5 +1,5 @@
-# Flutter Aop 可复用的极简工程
-通过AST语法树操纵实现，适配版本：Flutter 2.2.0
+# Flutter Aop 可复用的极简框架
+通过AST语法树操纵实现，适配版本：Flutter 2.2.0、2.5.3、2.8.1、2.10.5、3.0.5，持续更新中
 
 - [x] **「极简」** 最少的改造和集成代码
 - [x] **「低风险」** 不影响其他工程编译流程
@@ -10,13 +10,21 @@ Demo中有一个简单的插桩例子，@HookType()标记的方法会自行打�
 ![image](https://user-images.githubusercontent.com/40731589/144044938-57425bf3-991d-4a22-9b29-467f7f09c89f.png)
 
 ### 一、如何复用Aop能力
-① 对FlutterSdk打补丁
+① 请将本工程切换到Flutter对应版本，分支为aop/x.x.x (flutter版本号)
+
+② 对FlutterSdk打补丁
 ```
+// 切换到flutterSdk目录
 cd xxx/flutter
-git apply aop_flutter_sdk_2.2.0.patch
+
+// 打入demo根目录下的git补丁
+git apply aop_flutter_sdk_x.x.x.patch
+
+// 删除flutter_tools缓存
 rm bin/cache/flutter_tools.stamp 
 ```
-② 拷贝Demo中transform文件夹到项目根目录下。
+
+③ 拷贝Demo中transform文件夹到项目根目录下。
 
 以上，即可在tranfrom工程中写入对该项目的插桩逻辑。
 
@@ -24,6 +32,12 @@ rm bin/cache/flutter_tools.stamp
 
 ### 二、运行与调试
 #### 1. 处理依赖
+
+直接运行Flutter工程，transform将自动关联依赖，运行后transform文件夹无import爆红。
+
+<br/>
+
+**以下是备用做法:** <br/>
 ① clone dart依赖仓库：
 ```
 git clone https://github.com/skylerpfli/DartSdkHook.git

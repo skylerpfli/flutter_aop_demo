@@ -68,3 +68,9 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 
 断点后，点击debug后即可调试
 
+### 三、常见问题
+#### 1. 热重启后aop失效
+目前未支持热重启，只支持正常打包的aop，已足够应对业务使用。
+
+#### 2. 运行时编译日志未打印
+大概率是缓存原因，可先运行flutter clean，并清空android/app/build目录

@@ -56,7 +56,7 @@ git clone https://github.com/skylerpfli/DartSdkHook.git
 
 --
 #### 2. 创建调试
-补丁已在flutter_tools创建对应日志，运行项目工程及可查看。需要的是启动frontend_server参数(--sdk-root及其以后)
+运行项目工程可查看日志，需要的是启动frontend_server参数(--sdk-root及其以后)
 ![image](https://user-images.githubusercontent.com/40731589/144049862-c9a9eecd-51dc-4107-86ce-694368693264.png)
 
 在AndroidStudio建立`Dart Command Line`

@@ -11,7 +11,7 @@
       "name": "_fe_analyzer_shared",
       "rootUri": "../../../third_party/dart/pkg/_fe_analyzer_shared",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.17"
     },
     {
       "name": "_js_interop_checks",
@@ -50,18 +50,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "charcode",
-      "rootUri": "../../../third_party/dart/third_party/pkg/charcode",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
-      "name": "cli_util",
-      "rootUri": "../../../third_party/dart/third_party/pkg/cli_util",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "collection",
       "rootUri": "../../../third_party/dart/third_party/pkg/collection",
       "packageUri": "lib/",
@@ -71,25 +59,19 @@
       "name": "compiler",
       "rootUri": "../../../third_party/dart/pkg/compiler",
       "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
-      "name": "convert",
-      "rootUri": "../../../third_party/dart/third_party/pkg/convert",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.16"
     },
     {
       "name": "crypto",
       "rootUri": "../../../third_party/dart/third_party/pkg/crypto",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.14"
     },
     {
       "name": "dart2js_info",
       "rootUri": "../../../third_party/dart/pkg/dart2js_info",
       "packageUri": "lib/",
-      "languageVersion": "2.11"
+      "languageVersion": "2.16"
     },
     {
       "name": "dev_compiler",
@@ -131,11 +113,17 @@
       "name": "js_ast",
       "rootUri": "../../../third_party/dart/pkg/js_ast",
       "packageUri": "lib/",
-      "languageVersion": "2.10"
+      "languageVersion": "2.16"
     },
     {
       "name": "js_runtime",
       "rootUri": "../../../third_party/dart/pkg/js_runtime",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "js_shared",
+      "rootUri": "../../../third_party/dart/pkg/js_shared",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -152,44 +140,20 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "logging",
-      "rootUri": "../../../third_party/dart/third_party/pkg/logging",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
-      "name": "matcher",
-      "rootUri": "../../../third_party/dart/third_party/pkg/matcher",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "meta",
       "rootUri": "../../../third_party/dart/pkg/meta",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
-      "name": "mime",
-      "rootUri": "../../../third_party/dart/third_party/pkg/mime",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "package_config",
-      "rootUri": "../../../third_party/dart/third_party/pkg_tested/package_config",
+      "rootUri": "../../../third_party/dart/third_party/pkg/package_config",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "path",
       "rootUri": "../../../third_party/dart/third_party/pkg/path",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
-      "name": "pedantic",
-      "rootUri": "../../../third_party/dart/third_party/pkg/pedantic",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -201,15 +165,9 @@
     },
     {
       "name": "shelf",
-      "rootUri": "../../../third_party/dart/third_party/pkg/shelf",
+      "rootUri": "../../../third_party/dart/third_party/pkg/shelf/pkgs/shelf",
       "packageUri": "lib/",
       "languageVersion": "2.16"
-    },
-    {
-      "name": "shelf_static",
-      "rootUri": "../../../third_party/dart/third_party/pkg/shelf_static",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
     },
     {
       "name": "smith",
@@ -263,11 +221,17 @@
       "name": "usage",
       "rootUri": "../../../third_party/dart/third_party/pkg/usage",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.15"
     },
     {
       "name": "vm",
       "rootUri": "../../../third_party/dart/pkg/vm",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
+      "name": "vm_service",
+      "rootUri": "../../../third_party/dart/pkg/vm_service",
       "packageUri": "lib/",
       "languageVersion": "2.15"
     },
@@ -278,7 +242,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2022-08-17T11:10:02.896188Z",
+  "generated": "2023-01-03T09:25:58.396342Z",
   "generator": "pub",
-  "generatorVersion": "2.16.2"
+  "generatorVersion": "2.17.0"
 }

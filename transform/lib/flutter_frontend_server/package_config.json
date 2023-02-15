@@ -2,12 +2,6 @@
   "configVersion": 2,
   "packages": [
     {
-      "name": "flutter_frontend_server",
-      "rootUri": "../",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
-    },
-    {
       "name": "_fe_analyzer_shared",
       "rootUri": "../../../third_party/dart/pkg/_fe_analyzer_shared",
       "packageUri": "lib/",
@@ -23,13 +17,13 @@
       "name": "args",
       "rootUri": "../../../third_party/dart/third_party/pkg/args",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "async",
       "rootUri": "../../../third_party/dart/third_party/pkg/async",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "2.18"
     },
     {
       "name": "async_helper",
@@ -53,13 +47,13 @@
       "name": "collection",
       "rootUri": "../../../third_party/dart/third_party/pkg/collection",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "compiler",
       "rootUri": "../../../third_party/dart/pkg/compiler",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.17"
     },
     {
       "name": "crypto",
@@ -84,6 +78,12 @@
       "rootUri": "../../../third_party/dart/pkg/expect",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "ffi",
+      "rootUri": "../../../third_party/dart/third_party/pkg/ffi",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
     },
     {
       "name": "fixnum",
@@ -167,7 +167,7 @@
       "name": "shelf",
       "rootUri": "../../../third_party/dart/third_party/pkg/shelf/pkgs/shelf",
       "packageUri": "lib/",
-      "languageVersion": "2.16"
+      "languageVersion": "2.17"
     },
     {
       "name": "smith",
@@ -179,19 +179,19 @@
       "name": "source_maps",
       "rootUri": "../../../third_party/dart/third_party/pkg/source_maps",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "source_span",
       "rootUri": "../../../third_party/dart/third_party/pkg/source_span",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "2.18"
     },
     {
       "name": "stack_trace",
       "rootUri": "../../../third_party/dart/third_party/pkg/stack_trace",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "stream_channel",
@@ -203,7 +203,7 @@
       "name": "string_scanner",
       "rootUri": "../../../third_party/dart/third_party/pkg/string_scanner",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "term_glyph",
@@ -221,7 +221,7 @@
       "name": "usage",
       "rootUri": "../../../third_party/dart/third_party/pkg/usage",
       "packageUri": "lib/",
-      "languageVersion": "2.15"
+      "languageVersion": "2.17"
     },
     {
       "name": "vm",
@@ -236,13 +236,25 @@
       "languageVersion": "2.15"
     },
     {
+      "name": "vm_snapshot_analysis",
+      "rootUri": "../../../third_party/dart/pkg/vm_snapshot_analysis",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "yaml",
       "rootUri": "../../../third_party/dart/third_party/pkg/yaml",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_frontend_server",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     }
   ],
-  "generated": "2023-01-03T09:25:58.396342Z",
+  "generated": "2023-02-15T11:10:55.772477Z",
   "generator": "pub",
-  "generatorVersion": "2.17.0"
+  "generatorVersion": "2.19.2"
 }

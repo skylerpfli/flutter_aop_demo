@@ -15,7 +15,7 @@ class TypeRecursiveVisitor extends RecursiveVisitor {
     //如果方法命中@HookType注解
     if (NodeUtils.checkIfClassEnable(node.annotations)) {
       //需要添加的语句
-      List<ExpressionStatement> statements = [];
+      List<Statement> statements = [];
 
       //位置参数
       node.function.positionalParameters.forEach((positionalParameter) {
@@ -30,7 +30,7 @@ class TypeRecursiveVisitor extends RecursiveVisitor {
       });
 
       //方法体中插入插桩语句
-      final Statement body = node.function.body;
+      final Statement? body = node.function.body;
       if (body is Block) {
         final Block blockBody = body;
         blockBody.statements.insertAll(0, statements);
@@ -50,7 +50,7 @@ class TypeRecursiveVisitor extends RecursiveVisitor {
     Expression variableGet = VariableGet(variableDeclaration);
 
     //构建表达式
-    StaticInvocation staticInvocation = StaticInvocation.byReference(TypeTransformer.printTypeReference, ArgumentsImpl(<Expression>[variableGet]));
+    StaticInvocation staticInvocation = StaticInvocation.byReference(TypeTransformer.printTypeReference!, ArgumentsImpl(<Expression>[variableGet]));
 
     //把表达式封装为语句，并返回
     return ExpressionStatement(staticInvocation);

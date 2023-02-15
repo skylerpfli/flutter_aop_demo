@@ -1,20 +1,23 @@
-From 1d340740f17df02aa9e411d7c1cb2347d38beac9 Mon Sep 17 00:00:00 2001
+From 76cad44a9b3e94aaab9c6fc74a09770952560067 Mon Sep 17 00:00:00 2001
 From: skyerpfli <skylerpfli@tencent.com>
-Date: Tue, 3 Jan 2023 20:49:04 +0800
-Subject: [PATCH] aop
+Date: Wed, 15 Feb 2023 16:36:19 +0800
+Subject: [PATCH] =?UTF-8?q?=E6=94=B9=E5=8A=A8?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 ---
  packages/flutter_tools/bin/flutter_tools.dart |   1 +
  packages/flutter_tools/lib/src/compile.dart   |  12 +-
- packages/flutter_tools/lib/src/hook.dart      | 109 ++++++++++++++++++
- 3 files changed, 119 insertions(+), 3 deletions(-)
+ packages/flutter_tools/lib/src/hook.dart      | 110 ++++++++++++++++++
+ 3 files changed, 120 insertions(+), 3 deletions(-)
  create mode 100644 packages/flutter_tools/lib/src/hook.dart
 
 diff --git a/packages/flutter_tools/bin/flutter_tools.dart b/packages/flutter_tools/bin/flutter_tools.dart
-index 1cad0ded07..0643b7353c 100644
+index 2caa134a35..57cbf6951c 100644
 --- a/packages/flutter_tools/bin/flutter_tools.dart
 +++ b/packages/flutter_tools/bin/flutter_tools.dart
-@@ -7,5 +7,6 @@
+@@ -5,5 +5,6 @@
  import 'package:flutter_tools/executable.dart' as executable;
  
  void main(List<String> args) {
@@ -22,7 +25,7 @@ index 1cad0ded07..0643b7353c 100644
    executable.main(args);
  }
 diff --git a/packages/flutter_tools/lib/src/compile.dart b/packages/flutter_tools/lib/src/compile.dart
-index 8733f87396..bb1747a632 100644
+index e072e6b7a4..a9468fe718 100644
 --- a/packages/flutter_tools/lib/src/compile.dart
 +++ b/packages/flutter_tools/lib/src/compile.dart
 @@ -2,6 +2,7 @@
@@ -50,7 +53,7 @@ index 8733f87396..bb1747a632 100644
      // This is a URI, not a file path, so the forward slash is correct even on Windows.
      if (!sdkRoot.endsWith('/')) {
        sdkRoot = '$sdkRoot/';
-@@ -336,6 +341,7 @@ class KernelCompiler {
+@@ -343,6 +348,7 @@ class KernelCompiler {
        mainUri,
      ];
  
@@ -60,10 +63,10 @@ index 8733f87396..bb1747a632 100644
  
 diff --git a/packages/flutter_tools/lib/src/hook.dart b/packages/flutter_tools/lib/src/hook.dart
 new file mode 100644
-index 0000000000..eb177c118e
+index 0000000000..a8a84824c3
 --- /dev/null
 +++ b/packages/flutter_tools/lib/src/hook.dart
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,110 @@
 +// Copyright 2018 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -82,6 +85,7 @@ index 0000000000..eb177c118e
 +import 'dart/package_map.dart';
 +import 'globals.dart' as globals;
 +import 'dart/pub.dart';
++import 'project.dart';
 +
 +// ignore: avoid_classes_with_only_static_members
 +/// transform
@@ -109,7 +113,7 @@ index 0000000000..eb177c118e
 +
 +  //获取dart sdk依赖
 +  static Future<String> getDartSdkDependency(String workingDirectory) async {
-+    await pub.get(context: PubContext.createPackage, directory: workingDirectory, printProgress: false).catchError((e) {
++    await pub.get(context: PubContext.createPackage, project: FlutterProject.fromDirectory(globals.fs.directory(workingDirectory)), printProgress: false).catchError((e) {
 +      print('ConchFlutter getDartSdkDependency unexpected error: $e');
 +      throwToolExit('ConchFlutter getDartSdkDependency unexpected error: $e');
 +    });

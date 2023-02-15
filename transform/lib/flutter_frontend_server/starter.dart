@@ -7,7 +7,7 @@ library frontend_server;
 
 import 'package:vm/target/flutter.dart';
 import 'dart:io';
-import 'package:frontend_server/frontend_server.dart';
+import 'package:frontend_server/starter.dart';
 import '../hook/type_transformer.dart';
 
 final TypeTransformer typeTransformer = TypeTransformer();

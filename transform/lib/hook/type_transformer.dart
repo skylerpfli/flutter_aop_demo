@@ -7,7 +7,7 @@ import 'package:vm/target/flutter.dart';
 
 /// 通过@HookType注解，打印方法参数类型
 class TypeTransformer extends FlutterProgramTransformer {
-  static Reference printTypeReference; //存储插入的方法
+  static Reference? printTypeReference; //存储插入的方法
 
   TypeTransformer();
 

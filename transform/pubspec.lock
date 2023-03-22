@@ -6,7 +6,7 @@ packages:
     description:
       path: "pkg/kernel"
       ref: "stable/3.3.10"
-      resolved-ref: "7536f7dad6d6655b658a98f6c31064987adbf38b"
+      resolved-ref: "52e99b2409e77da3a19246300e618a7962bc3f27"
       url: "https://github.com/skylerpfli/DartSdkHook.git"
     source: git
     version: "0.0.0"
@@ -15,7 +15,7 @@ packages:
     description:
       path: "pkg/meta"
       ref: "stable/3.3.10"
-      resolved-ref: "7536f7dad6d6655b658a98f6c31064987adbf38b"
+      resolved-ref: "52e99b2409e77da3a19246300e618a7962bc3f27"
       url: "https://github.com/skylerpfli/DartSdkHook.git"
     source: git
     version: "1.8.0"

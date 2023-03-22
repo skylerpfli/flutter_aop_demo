@@ -13,11 +13,12 @@ import '../hook/type_transformer.dart';
 final TypeTransformer typeTransformer = TypeTransformer();
 
 void main(List<String> args) async {
-  ///在FlutterTarget中加入Transformer
+  // 在切入点加入Transformer
   if (!FlutterTarget.flutterProgramTransformers.contains(typeTransformer)) {
     FlutterTarget.flutterProgramTransformers.add(typeTransformer);
   }
 
+  // 执行原本的编译流程
   final int exitCode = await starter(args);
   if (exitCode != 0) {
     exit(exitCode);

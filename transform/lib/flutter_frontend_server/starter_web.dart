@@ -13,10 +13,11 @@ import 'package:compiler/src/dart2js.dart' as dart2js;
 final TypeTransformer typeTransformer = TypeTransformer();
 
 Future<void> main(List<String> args) async {
-  ///在FlutterTarget中加入Transformer
+  // 在切入点加入Transformer
   if (!FlutterTarget.flutterProgramTransformers.contains(typeTransformer)) {
     FlutterTarget.flutterProgramTransformers.add(typeTransformer);
   }
 
+  // 执行原本的编译流程
   dart2js.main(args);
 }

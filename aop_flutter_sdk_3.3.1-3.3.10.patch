@@ -1,13 +1,14 @@
-From 1d340740f17df02aa9e411d7c1cb2347d38beac9 Mon Sep 17 00:00:00 2001
-From: skyerpfli <skylerpfli@tencent.com>
-Date: Tue, 3 Jan 2023 20:49:04 +0800
-Subject: [PATCH] aop
+From 855e4b679c0e36a0a4a29acbf001d39d49c8481c Mon Sep 17 00:00:00 2001
+From: skylerpfli <skylerpfli@tencent.com>
+Date: Wed, 22 Mar 2023 16:15:41 +0800
+Subject: [PATCH] xxx
 
 ---
  packages/flutter_tools/bin/flutter_tools.dart |   1 +
+ .../lib/src/build_system/targets/web.dart     |  12 +-
  packages/flutter_tools/lib/src/compile.dart   |  12 +-
- packages/flutter_tools/lib/src/hook.dart      | 109 ++++++++++++++++++
- 3 files changed, 119 insertions(+), 3 deletions(-)
+ packages/flutter_tools/lib/src/hook.dart      | 114 ++++++++++++++++++
+ 4 files changed, 133 insertions(+), 6 deletions(-)
  create mode 100644 packages/flutter_tools/lib/src/hook.dart
 
 diff --git a/packages/flutter_tools/bin/flutter_tools.dart b/packages/flutter_tools/bin/flutter_tools.dart
@@ -21,8 +22,54 @@ index 1cad0ded07..0643b7353c 100644
 +  print('FlutterAop execute command: ${args.join(' ')}');
    executable.main(args);
  }
+diff --git a/packages/flutter_tools/lib/src/build_system/targets/web.dart b/packages/flutter_tools/lib/src/build_system/targets/web.dart
+index 35b7b4e765..5415267d8d 100644
+--- a/packages/flutter_tools/lib/src/build_system/targets/web.dart
++++ b/packages/flutter_tools/lib/src/build_system/targets/web.dart
+@@ -26,6 +26,7 @@ import '../depfile.dart';
+ import '../exceptions.dart';
+ import 'assets.dart';
+ import 'localizations.dart';
++import '../../hook.dart';
+ 
+ /// Whether the application has web plugins.
+ const String kHasWebPlugins = 'HasWebPlugins';
+@@ -183,10 +184,13 @@ class Dart2JSTarget extends Target {
+     final bool nativeNullAssertions = environment.defines[kNativeNullAssertions] == 'true';
+     final Artifacts artifacts = globals.artifacts!;
+     final String librariesSpec = (artifacts.getHostArtifact(HostArtifact.flutterWebSdk) as Directory).childFile('libraries.json').path;
++    String? dart2jsSnapshot = await TransformHook.fetchTransformSnapshot(isWeb: true);
++    print('ConchFlutter web hookCompile isEnable: ${dart2jsSnapshot != null}');
++    dart2jsSnapshot ??= artifacts.getHostArtifact(HostArtifact.dart2jsSnapshot).path;
+     final List<String> sharedCommandOptions = <String>[
+       artifacts.getHostArtifact(HostArtifact.engineDartBinary).path,
+       '--disable-dart-dev',
+-      artifacts.getHostArtifact(HostArtifact.dart2jsSnapshot).path,
++      dart2jsSnapshot,
+       '--libraries-spec=$librariesSpec',
+       ...decodeCommaSeparated(environment.defines, kExtraFrontEndOptions),
+       if (nativeNullAssertions)
+@@ -203,14 +207,16 @@ class Dart2JSTarget extends Target {
+ 
+     // Run the dart2js compilation in two stages, so that icon tree shaking can
+     // parse the kernel file for web builds.
+-    final ProcessResult kernelResult = await globals.processManager.run(<String>[
++    final List<String> options = <String>[
+       ...sharedCommandOptions,
+       '-o',
+       environment.buildDir.childFile('app.dill').path,
+       '--packages=.dart_tool/package_config.json',
+       '--cfe-only',
+       environment.buildDir.childFile('main.dart').path, // dartfile
+-    ]);
++    ];
++    print('ConchFlutter Dart2JS compile command: ${options.join(' ')}');
++    final ProcessResult kernelResult = await globals.processManager.run(options);
+     if (kernelResult.exitCode != 0) {
+       throw Exception(_collectOutput(kernelResult));
+     }
 diff --git a/packages/flutter_tools/lib/src/compile.dart b/packages/flutter_tools/lib/src/compile.dart
-index 8733f87396..bb1747a632 100644
+index 8733f87396..141d120b26 100644
 --- a/packages/flutter_tools/lib/src/compile.dart
 +++ b/packages/flutter_tools/lib/src/compile.dart
 @@ -2,6 +2,7 @@
@@ -41,7 +88,7 @@ index 8733f87396..bb1747a632 100644
 -      Artifact.frontendServerSnapshotForEngineDartSdk
 -    );
 +    /// 插桩工程，有限
-+    String? frontendServer = await TransformHook.fetchTransformSnapshot();
++    String? frontendServer = await TransformHook.fetchTransformSnapshot(isWeb: false);
 +    print('FlutterAop isEnable: ${frontendServer != null}');
 +
 +    /// 默认
@@ -60,10 +107,10 @@ index 8733f87396..bb1747a632 100644
  
 diff --git a/packages/flutter_tools/lib/src/hook.dart b/packages/flutter_tools/lib/src/hook.dart
 new file mode 100644
-index 0000000000..eb177c118e
+index 0000000000..63de7a0a5c
 --- /dev/null
 +++ b/packages/flutter_tools/lib/src/hook.dart
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,114 @@
 +// Copyright 2018 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -87,7 +134,7 @@ index 0000000000..eb177c118e
 +/// transform
 +class TransformHook {
 +  //snapshot名
-+  static const String frontendServerDartSnapshot = 'frontend_server.dart.snapshot';
++  static const String hookSnapshot = 'hook.snapshot';
 +
 +  //传入.package路径，获取某一依赖的路径
 +  static Future<Directory?> _getPackagePathFromConfig(String packageConfigPath, String packageName) async {
@@ -123,56 +170,61 @@ index 0000000000..eb177c118e
 +  }
 +
 +  //获取FlutterAop的frontend_server snapshot路径
-+  static Future<String?> fetchTransformSnapshot() async {
++  static Future<String?> fetchTransformSnapshot({required bool isWeb}) async {
 +    final Directory currentDirectory = globals.fs.currentDirectory;
 +    if (!currentDirectory.existsSync()) {
 +      return null;
 +    }
 +    final String packagesPath = currentDirectory.absolute.path;
 +
-+    final Directory flutterFrontendServerDirectory = await getFlutterFrontendServerDirectory(packagesPath);
++    final Directory hookDirectory = await getFlutterFrontendServerDirectory(packagesPath);
 +
-+    if (!flutterFrontendServerDirectory.existsSync()) {
-+      return null;
++    if (!hookDirectory.existsSync()
++        && (!isWeb && globals.fs.file(globals.fs.path.join(hookDirectory.path, 'starter.dart')).existsSync() || isWeb && globals.fs.file(globals.fs.path.join(hookDirectory.path, 'starter_web.dart')).existsSync())
++        && globals.fs.file(globals.fs.path.join(currentDirectory.path, 'pubspec.yaml')).existsSync()
++        && globals.fs.file(globals.fs.path.join(currentDirectory.path, 'lib', 'main.dart')).existsSync()
++    ) {
++    return null;
 +    }
 +
-+    final String hookFlutterFrontendServerSnapshot = globals.fs.path.join(flutterFrontendServerDirectory.absolute.path, frontendServerDartSnapshot);
++    final String hookFlutterFrontendServerSnapshot = globals.fs.path.join(hookDirectory.absolute.path, hookSnapshot);
 +
 +    //每次都重新生成FrontendServerSnapshot
 +    if (globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
-+      globals.fs.file(hookFlutterFrontendServerSnapshot).deleteSync();
++    globals.fs.file(hookFlutterFrontendServerSnapshot).deleteSync();
 +    }
 +    final String dartSdkDir = await getDartSdkDependency(globals.fs.path.join(packagesPath, 'transform'));
-+    final String frontendServerPackageConfigJsonFile = '${flutterFrontendServerDirectory.absolute.path}/package_config.json';
-+    final String rebasedFrontendServerPackageConfigJsonFile = '${flutterFrontendServerDirectory.absolute.path}/rebased_package_config.json';
++    final String frontendServerPackageConfigJsonFile = '${hookDirectory.absolute.path}/package_config.json';
++    final String rebasedFrontendServerPackageConfigJsonFile = '${hookDirectory.absolute.path}/rebased_package_config.json';
 +    String frontendServerPackageConfigJson = globals.fs.file(frontendServerPackageConfigJsonFile).readAsStringSync();
 +    frontendServerPackageConfigJson = frontendServerPackageConfigJson.replaceAll('../../../third_party/dart/', dartSdkDir);
 +    globals.fs.file(rebasedFrontendServerPackageConfigJsonFile).writeAsStringSync(frontendServerPackageConfigJson);
 +
 +    final List<String> commands = <String>[
-+      globals.artifacts!.getHostArtifact(HostArtifact.engineDartBinary).path,
-+      '--deterministic',
-+      '--packages=$rebasedFrontendServerPackageConfigJsonFile',
-+      '--snapshot=$hookFlutterFrontendServerSnapshot',
-+      '--snapshot-kind=kernel',
-+      '${flutterFrontendServerDirectory.absolute.path}/starter.dart'
++    globals.artifacts!.getHostArtifact(HostArtifact.engineDartBinary).path,
++    '--deterministic',
++    '--packages=$rebasedFrontendServerPackageConfigJsonFile',
++    '--snapshot=$hookFlutterFrontendServerSnapshot',
++    '--snapshot-kind=kernel',
++    '${hookDirectory.absolute.path}/${isWeb ? 'starter_web.dart' : 'starter.dart'}'
 +    ];
 +    final ProcessResult processResult = await globals.processManager.run(commands);
 +    final String dartToolPackageConfigFile = globals.fs.path.join(packagesPath, 'transform', '.dart_tool', 'package_config.json');
 +    await globals.processManager.run(<String>['cp', '-rf', rebasedFrontendServerPackageConfigJsonFile, dartToolPackageConfigFile]);
 +    globals.fs.file(rebasedFrontendServerPackageConfigJsonFile).deleteSync();
 +    if (processResult.exitCode != 0 || !globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
-+      print('ConchFlutter fetchTransformSnapshot unexpected error: ${processResult.stderr.toString()}');
-+      throwToolExit('ConchFlutter fetchTransformSnapshot unexpected error: ${processResult.stderr.toString()}');
++    print('ConchFlutter fetchTransformSnapshot unexpected error: ${processResult.stderr.toString()}');
++    throwToolExit('ConchFlutter fetchTransformSnapshot unexpected error: ${processResult.stderr.toString()}');
 +    }
 +
 +    if (!globals.fs.file(hookFlutterFrontendServerSnapshot).existsSync()) {
-+      return null;
++    return null;
 +    }
 +
-+    return hookFlutterFrontendServerSnapshot;
++    return
++    hookFlutterFrontendServerSnapshot;
 +  }
 +}
 -- 
-2.24.3 (Apple Git-128)
+2.32.1 (Apple Git-133)
 

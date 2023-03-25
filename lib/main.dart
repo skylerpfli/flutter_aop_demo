@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:annotation/hook_type.dart';
+import 'throttle/throttle.dart';
+
 
 void main() {
   runApp(MyApp());
-}
-
-/// 测试@HookType插桩的示例页面，点击按钮后，_testTypeHook()会打印日志(@HookType)
-@HookType()
-void _testTypeHook(dynamic obj1, dynamic obj2, dynamic obj3) {
-  //aop插桩位置
-  //处理逻辑.., 这里什么都没做
 }
 
 class MyApp extends StatelessWidget {
@@ -37,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  @Throttle(time: 500, tips: "点击太快啦~！")
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -56,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: EdgeInsets.only(bottom: 20),
               child: Text(
-                'Please click And see @HookType logs.',
+                'Please click And see logs.',
               ),
             ),
             Text(
@@ -64,23 +59,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
+              style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var obj1 = 123;
-          var obj2 = "字符串对象";
-          var obj3 = Container();
-
-          _testTypeHook(obj1, obj2, obj3);
-          _incrementCounter();
-        },
+        onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

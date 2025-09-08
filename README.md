@@ -1,3 +1,8 @@
+
+# ！本项目不再更新，后续请使用AOPRegistry：https://github.com/TDesignOteam/tdesign-flutter-aop-registry
+<br/>
+<br/>
+
 # Flutter Aop 可复用的极简框架
 通过AST语法树操纵实现，适配版本：Flutter 2.2.0、2.5.3、2.8.1、2.10.5、3.0.5，3.3.1，3.3.10，3.7.3持续更新中
 
